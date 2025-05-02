@@ -4,7 +4,6 @@ public class NewEmptyCSharpScript : MonoBehaviour
 {
 
     Rigidbody2D rb;
-    SRigidbody2D rb;
     SpriteRenderer sr;
     Animator animator;
 
@@ -30,7 +29,7 @@ public class NewEmptyCSharpScript : MonoBehaviour
         // Aplica gravedad manual
         if (!puedeMoverseVerticalMente)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + (Physics2D.gravity.y * defaultGravityScale * Time.deltaTime));
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y + (Physics2D.gravity.y * defaultGravityScale * Time.deltaTime));
         }
 
         SetupMoverseHorizontal();
@@ -76,15 +75,15 @@ public class NewEmptyCSharpScript : MonoBehaviour
     {
         if (!puedeMoverseVerticalMente) return;
 
-        rb.velocity = new Vector2(rb.velocity.x, 0); // Reinicia la velocidad vertical
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0); // Reinicia la velocidad vertical
 
         if (Input.GetKey(KeyCode.UpArrow))
         {
-            rb.velocity = new Vector2(rb.velocity.x, 10);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 10);
         }
         else if (Input.GetKey(KeyCode.DownArrow))
         {
-            rb.velocity = new Vector2(rb.velocity.x, -10);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -10);
         }
     }
 
@@ -106,7 +105,7 @@ public class NewEmptyCSharpScript : MonoBehaviour
             animator.SetInteger("Estado", 1);
         }
 
-        rb.velocity = new Vector2(velocidadX, rb.velocity.y);
+        rb.linearVelocity = new Vector2(velocidadX, rb.linearVelocity.y);
     }
 
     void SetupAtacar()
@@ -129,7 +128,7 @@ public class NewEmptyCSharpScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            rb.velocity = new Vector2(rb.velocity.x, 10.4f);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 10.4f);
             puedeSaltar = false;
         }
     }
