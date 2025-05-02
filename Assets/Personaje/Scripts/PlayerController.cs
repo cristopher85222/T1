@@ -4,14 +4,15 @@ public class NewEmptyCSharpScript : MonoBehaviour
 {
 
     Rigidbody2D rb;
+    SRigidbody2D rb;
     SpriteRenderer sr;
     Animator animator;
+
+    //Modificacion 
     private bool puedeMoverseVerticalMente = false;
     private float defaultGravityScale = 1f;
     private bool puedeSaltar = true;
-   
     private bool estaAtacando = false;
-
 
     void Start()
     {
@@ -20,29 +21,39 @@ public class NewEmptyCSharpScript : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
 
+        // Configura la gravedad por defecto
         defaultGravityScale = rb.gravityScale;
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Aplica gravedad manual
+        if (!puedeMoverseVerticalMente)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + (Physics2D.gravity.y * defaultGravityScale * Time.deltaTime));
+        }
 
-       
-            SetupMoverseHorizontal();
-            SetupMoverseVertical();
-            SetupSalto(); 
-            SetupAtacar();
+        SetupMoverseHorizontal();
+        SetupMoverseVertical();
+        SetupSalto();
+        SetupAtacar();
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.CompareTag("Suelo"))
+        {
+            puedeSaltar = true;
+        }
+
         if (collision.gameObject.CompareTag("Enemigo"))
         {
-            DemonController demon = collision.gameObject.GetComponent < DemonController>();
-            Debug.Log($"Colision con Enemigo: ${demon.puntosVida}");
+            DemonController demon = collision.gameObject.GetComponent<DemonController>();
+            Debug.Log($"Colisión con Enemigo: {demon.puntosVida}");
             Destroy(collision.gameObject);
         }
     }
+
     void OnTriggerStay2D(Collider2D other)
     {
         Debug.Log($"Trigger con: {other.gameObject.name}");
@@ -51,52 +62,51 @@ public class NewEmptyCSharpScript : MonoBehaviour
             puedeMoverseVerticalMente = true;
         }
     }
+
     void OnTriggerExit2D(Collider2D other)
     {
         Debug.Log($"Trigger con: {other.gameObject.name}");
         if (other.gameObject.name == "Muro")
         {
             puedeMoverseVerticalMente = false;
-            rb.gravityScale = defaultGravityScale;
         }
     }
+
     void SetupMoverseVertical()
     {
-
         if (!puedeMoverseVerticalMente) return;
-        rb.gravityScale = 0;
-        rb.linearVelocityY = 0;
+
+        rb.velocity = new Vector2(rb.velocity.x, 0); // Reinicia la velocidad vertical
+
         if (Input.GetKey(KeyCode.UpArrow))
         {
-            rb.linearVelocityY = 10;
+            rb.velocity = new Vector2(rb.velocity.x, 10);
         }
-        if (Input.GetKey(KeyCode.DownArrow))
+        else if (Input.GetKey(KeyCode.DownArrow))
         {
-            rb.linearVelocityY = -10;
+            rb.velocity = new Vector2(rb.velocity.x, -10);
         }
     }
 
     void SetupMoverseHorizontal()
     {
-        
-        
-            rb.linearVelocityX = 0;
-            animator.SetInteger("Estado", 0);
-        
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                rb.linearVelocityX = 10;
-                sr.flipX = false;
-                animator.SetInteger("Estado", 1);
-            }
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                rb.linearVelocityX = -10;
-                sr.flipX = true;
-                animator.SetInteger("Estado", 1);
-            }
-        
-       
+        float velocidadX = 0;
+        animator.SetInteger("Estado", 0);
+
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            velocidadX = 10;
+            sr.flipX = false;
+            animator.SetInteger("Estado", 1);
+        }
+        else if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            velocidadX = -10;
+            sr.flipX = true;
+            animator.SetInteger("Estado", 1);
+        }
+
+        rb.velocity = new Vector2(velocidadX, rb.velocity.y);
     }
 
     void SetupAtacar()
@@ -112,12 +122,15 @@ public class NewEmptyCSharpScript : MonoBehaviour
             animator.SetInteger("Estado", 0); // Volver a Idle
         }
     }
+
     void SetupSalto()
     {
         if (!puedeSaltar) return;
-        if (Input.GetKeyUp(KeyCode.Space))
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            rb.linearVelocityY = 10.4f;
+            rb.velocity = new Vector2(rb.velocity.x, 10.4f);
+            puedeSaltar = false;
         }
     }
 }

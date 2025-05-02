@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      meditate_11_0: 6013192077706043168
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
